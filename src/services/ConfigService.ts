@@ -1,3 +1,5 @@
+import { COMPANY_MAPPINGS, AVAILABLE_COMPANIES } from '../config/companies';
+
 export interface CompanyMapping {
   companyName: string;
   description: string;
@@ -50,21 +52,7 @@ class ConfigService {
   }
 
   async getAvailableCompanies(): Promise<CompanyInfo[]> {
-    // En una implementación real, esto podría ser dinámico
-    // Por ahora, retornamos las empresas configuradas
-    return [
-      {
-        name: 'Typhoon',
-        displayName: 'Typhoon',
-        description: 'Configuración de mapeo para productos de Typhoon'
-      },
-      {
-        name: 'ExampleCorp',
-        displayName: 'Example Corporation',
-        description: 'Configuración de mapeo para productos de Example Corporation'
-      }
-      // Aquí se pueden agregar más empresas
-    ];
+    return AVAILABLE_COMPANIES;
   }
 
   async loadCompanyMapping(companyName: string): Promise<CompanyMapping> {
@@ -73,9 +61,12 @@ class ConfigService {
     }
 
     try {
-      // Importar el archivo de configuración dinámicamente
-      const configModule = await import(`../config/companies/${companyName}/mapping.json`);
-      const mapping: CompanyMapping = configModule.default || configModule;
+      // Obtener la configuración desde el registro estático
+      const mapping = COMPANY_MAPPINGS[companyName];
+
+      if (!mapping) {
+        throw new Error(`Configuración no encontrada para la empresa ${companyName}`);
+      }
 
       this.loadedConfigs.set(companyName, mapping);
       return mapping;
@@ -83,9 +74,7 @@ class ConfigService {
       console.error(`Error loading mapping for company ${companyName}:`, error);
       throw new Error(`No se pudo cargar la configuración para la empresa ${companyName}`);
     }
-  }
-
-  getColumnMapping(companyMapping: CompanyMapping, headerName: string): string | null {
+  }  getColumnMapping(companyMapping: CompanyMapping, headerName: string): string | null {
     // Buscar mapeo directo
     if (companyMapping.headerMappings[headerName]) {
       return companyMapping.headerMappings[headerName];

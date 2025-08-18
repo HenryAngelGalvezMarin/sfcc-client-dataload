@@ -1,4 +1,4 @@
-import js2xmlparser from 'js2xmlparser';
+import { parse as js2xmlparserParse } from 'js2xmlparser';
 import ConfigService, { type CompanyMapping } from './ConfigService';
 import type { DataRow } from '../types/conversion';
 
@@ -310,7 +310,7 @@ export class CompanyConversionService {
       }
     };
 
-    return js2xmlparser.parse('catalog', catalog, xmlOptions);
+    return js2xmlparserParse('catalog', catalog, xmlOptions);
   }
 }
 
