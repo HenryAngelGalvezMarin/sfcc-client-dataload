@@ -1,44 +1,5 @@
-import { COMPANY_MAPPINGS, AVAILABLE_COMPANIES } from '../config/companies';
-
-export interface CompanyMapping {
-  companyName: string;
-  description: string;
-  version: string;
-  catalog: {
-    catalogId: string;
-    defaultCurrency: string;
-    defaultLocale: string;
-  };
-  columnMappings: Record<string, {
-    xmlElement: string;
-    subElement?: string;
-    attribute: string | null;
-    required: boolean;
-    dataType: 'string' | 'number' | 'boolean' | 'date';
-    locale?: string;
-    currency?: string;
-    catalogId?: string;
-    defaultValue?: string | number | boolean;
-    description: string;
-  }>;
-  headerMappings: Record<string, string>;
-  transformations: {
-    boolean: {
-      true: string[];
-      false: string[];
-    };
-    currency: {
-      removeSymbols: string[];
-      decimalPlaces: number;
-    };
-  };
-}
-
-export interface CompanyInfo {
-  name: string;
-  displayName: string;
-  description: string;
-}
+import { AVAILABLE_COMPANIES, getCompanyMapping } from '../config/companies';
+import type { CompanyMapping, CompanyInfo } from '../types/company';
 
 class ConfigService {
   private static instance: ConfigService;
@@ -55,20 +16,22 @@ class ConfigService {
     return AVAILABLE_COMPANIES;
   }
 
-  async loadCompanyMapping(companyName: string): Promise<CompanyMapping> {
-    if (this.loadedConfigs.has(companyName)) {
-      return this.loadedConfigs.get(companyName)!;
+  async loadCompanyMapping(companyName: string, schema: 'catalog' | 'pricebook' = 'catalog'): Promise<CompanyMapping> {
+    const cacheKey = `${companyName}-${schema}`;
+
+    if (this.loadedConfigs.has(cacheKey)) {
+      return this.loadedConfigs.get(cacheKey)!;
     }
 
     try {
       // Obtener la configuración desde el registro estático
-      const mapping = COMPANY_MAPPINGS[companyName];
+      const mapping = getCompanyMapping(companyName, schema);
 
       if (!mapping) {
-        throw new Error(`Configuración no encontrada para la empresa ${companyName}`);
+        throw new Error(`Configuración no encontrada para la empresa ${companyName} con esquema ${schema}`);
       }
 
-      this.loadedConfigs.set(companyName, mapping);
+      this.loadedConfigs.set(cacheKey, mapping);
       return mapping;
     } catch (error) {
       console.error(`Error loading mapping for company ${companyName}:`, error);

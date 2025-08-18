@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import ConfigService, { type CompanyInfo } from '../services/ConfigService';
+import ConfigService from '../services/ConfigService';
+import type { CompanyInfo } from '../types/company';
 
 interface CompanySelectorProps {
   selectedCompany: string | null;

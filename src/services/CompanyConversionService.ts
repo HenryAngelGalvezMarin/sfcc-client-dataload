@@ -1,5 +1,6 @@
 import { parse as js2xmlparserParse } from 'js2xmlparser';
-import ConfigService, { type CompanyMapping } from './ConfigService';
+import ConfigService from './ConfigService';
+import type { CompanyMapping } from '../types/company';
 import type { DataRow } from '../types/conversion';
 
 export interface ConversionResult {

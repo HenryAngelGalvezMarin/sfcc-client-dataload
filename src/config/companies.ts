@@ -1,22 +1,21 @@
 // Configuraciones de empresa disponibles
-import TyphoonMapping from './companies/Typhoon/mapping.json';
-import ExampleCorpMapping from './companies/ExampleCorp/mapping.json';
-import type { CompanyMapping } from '../services/ConfigService';
+import { TyphoonConfig } from './companies/Typhoon';
+import { ExampleCorpConfig } from './companies/ExampleCorp';
+import type { CompanyConfig, CompanyMapping } from '../types/company';
 
-export const COMPANY_MAPPINGS: Record<string, CompanyMapping> = {
-  'Typhoon': TyphoonMapping as CompanyMapping,
-  'ExampleCorp': ExampleCorpMapping as CompanyMapping,
+// Registro de todas las empresas configuradas
+export const COMPANY_CONFIGS: Record<string, CompanyConfig> = {
+  'Typhoon': TyphoonConfig,
+  'ExampleCorp': ExampleCorpConfig,
 };
 
-export const AVAILABLE_COMPANIES = [
-  {
-    name: 'Typhoon',
-    displayName: 'Typhoon',
-    description: 'Configuración de mapeo para productos de Typhoon'
-  },
-  {
-    name: 'ExampleCorp',
-    displayName: 'Example Corporation',
-    description: 'Configuración de mapeo para productos de Example Corporation'
-  }
-];
+// Lista de empresas disponibles para el selector
+export const AVAILABLE_COMPANIES = Object.values(COMPANY_CONFIGS).map(config => config.info);
+
+// Helper para obtener mapeos específicos por esquema
+export const getCompanyMapping = (companyName: string, schema: 'catalog' | 'pricebook' = 'catalog'): CompanyMapping | null => {
+  const config = COMPANY_CONFIGS[companyName];
+  if (!config) return null;
+
+  return config.mappings[schema] || null;
+};

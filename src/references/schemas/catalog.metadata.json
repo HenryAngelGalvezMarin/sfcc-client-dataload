@@ -1,6 +1,7 @@
 {
   "targetNamespace": "http://www.demandware.com/xml/impex/catalog/2006-10-31",
   "rootElement": "catalog",
+  "version": "1.0.0",
   "elements": {
     "catalog": {
       "name": "catalog",
@@ -761,5 +762,23 @@
   "imports": [
     "http://www.w3.org/XML/1998/namespace"
   ],
-  "includes": []
+  "includes": [],
+  "generatedAt": "2025-08-18T19:36:21.024Z",
+  "sourceFile": "catalog.xsd",
+  "recommendations": {
+    "commonMappings": {},
+    "requiredFields": [
+      "catalog",
+      "header",
+      "product-attribute-definitions",
+      "category",
+      "product-option",
+      "variation-attribute",
+      "product",
+      "category-assignment",
+      "recommendation"
+    ],
+    "optionalFields": [],
+    "nestedStructures": []
+  }
 }

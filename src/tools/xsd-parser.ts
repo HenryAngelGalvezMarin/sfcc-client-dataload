@@ -1,23 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { XMLParser } from 'fast-xml-parser';
 import { readFileSync } from 'fs';
 import type { XSDMetadata, XSDElement, XSDComplexType, XSDSimpleType, XSDAttribute } from '../types/xsd-metadata';
 
-// Tipos para elementos XSD parseados
-interface ParsedXSDElement {
-  [key: string]: unknown;
-  '@_name'?: string;
-  '@_type'?: string;
-  '@_minOccurs'?: string;
-  '@_maxOccurs'?: string;
-  '@_use'?: string;
-  '@_default'?: string;
+export interface MappingRecommendations {
+  commonMappings: { [key: string]: string[] };
+  requiredFields: string[];
+  optionalFields: string[];
+  nestedStructures: string[];
 }
 
 export class XSDParser {
   private parser: XMLParser;
-  private xsdContent: any;
+  private xsdContent: Record<string, unknown> = {};
   private targetNamespace: string = '';
-  private elementFormDefault: string = 'unqualified';
 
   constructor() {
     this.parser = new XMLParser({
@@ -39,6 +35,13 @@ export class XSDParser {
     } catch (error) {
       throw new Error(`Error leyendo archivo XSD: ${error}`);
     }
+  }
+
+  /**
+   * Alias para parseXSD para compatibilidad
+   */
+  public parseXSDFile(xsdFilePath: string): XSDMetadata {
+    return this.parseXSD(xsdFilePath);
   }
 
   /**
