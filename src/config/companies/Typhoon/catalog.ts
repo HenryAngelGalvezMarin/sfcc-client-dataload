@@ -80,15 +80,6 @@ export const TyphoonCatalogMapping: CompanyMapping = {
       defaultValue: "standard",
       description: "Clase de impuesto del producto"
     },
-    "price": {
-      xmlElement: "price-table",
-      subElement: "amount",
-      attribute: null,
-      required: false,
-      dataType: "number",
-      currency: "USD",
-      description: "Precio del producto"
-    },
     "category": {
       xmlElement: "classification-category",
       attribute: "catalog-id",
@@ -105,7 +96,6 @@ export const TyphoonCatalogMapping: CompanyMapping = {
     "short-description": "short-description",
     "long-description": "long-description",
     "brand": "brand",
-    "price": "price",
     "category": "category",
     "online-flag": "online-flag",
     "available-flag": "available-flag",
@@ -120,8 +110,6 @@ export const TyphoonCatalogMapping: CompanyMapping = {
     "Description": "short-description",
     "Long Description": "long-description",
     "Brand": "brand",
-    "Price": "price",
-    "Cost": "price",
     "Category": "category",
     "Categories": "category",
     "Online": "online-flag",

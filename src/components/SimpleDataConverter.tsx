@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Upload, FileText, Download, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import CompanySelector from './CompanySelector';
 import { FileService } from '../services/FileService';
-import CompanyConversionService, { type ConversionResult } from '../services/CompanyConversionService';
+import { SFCCConversionService } from '../services/SFCCConversionService';
+import ConfigService from '../services/ConfigService';
+import type { ConversionResult } from '../types/conversion';
 import type { DataRow } from '../types/conversion';
 
 interface FileInfo {
@@ -72,12 +74,11 @@ const SimpleDataConverter: React.FC = () => {
     setConversionResult(null);
 
     try {
-      const conversionService = new CompanyConversionService();
-      const result = await conversionService.convertToXML(fileData, selectedCompany, {
-        validateData: true,
-        skipEmptyValues: true,
-        indent: true
-      });
+      // Obtener la configuración de la empresa
+      const configService = ConfigService.getInstance();
+      const companyMapping = await configService.loadCompanyMapping(selectedCompany);
+
+      const result = await SFCCConversionService.convertToSFCCCatalog(fileData, companyMapping);
 
       setConversionResult(result);
 
@@ -300,10 +301,11 @@ const SimpleDataConverter: React.FC = () => {
                         <span className="font-medium">Errores:</span> {conversionResult.errors.length}
                       </div>
                     </div>
-
-                    {/* Download Button */}
+                  </div>
+                </div>
+                {/* Download Button */}
                     {conversionResult.xmlContent && (
-                      <div className="mt-4">
+                      <div className="mt-4 flex justify-center">
                         <button
                           onClick={handleDownloadXML}
                           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
@@ -313,8 +315,6 @@ const SimpleDataConverter: React.FC = () => {
                         </button>
                       </div>
                     )}
-                  </div>
-                </div>
               </div>
 
               {/* Errors and Warnings */}

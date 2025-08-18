@@ -2,8 +2,8 @@ import type { CompanyMapping } from '../../../types/company';
 
 export const ExampleCorpCatalogMapping: CompanyMapping = {
   companyName: "ExampleCorp",
-  description: "Configuración de mapeo para catálogo de productos de Example Corporation",
-  version: "1.0.0",
+  description: "Configuración de mapeo para catálogo de productos de Example Corporation - Usando clases SFCC",
+  version: "2.0.0",
   catalog: {
     catalogId: "examplecorp-catalog",
     defaultCurrency: "EUR",
@@ -25,6 +25,14 @@ export const ExampleCorpCatalogMapping: CompanyMapping = {
       locale: "en_GB",
       description: "Nombre visible del producto"
     },
+    "short-description": {
+      xmlElement: "short-description",
+      attribute: null,
+      required: false,
+      dataType: "string",
+      locale: "en_GB",
+      description: "Descripción corta del producto"
+    },
     "description": {
       xmlElement: "long-description",
       attribute: null,
@@ -39,15 +47,6 @@ export const ExampleCorpCatalogMapping: CompanyMapping = {
       required: false,
       dataType: "string",
       description: "Marca del producto"
-    },
-    "price": {
-      xmlElement: "price-table",
-      subElement: "amount",
-      attribute: null,
-      required: false,
-      dataType: "number",
-      currency: "EUR",
-      description: "Precio del producto en euros"
     },
     "category": {
       xmlElement: "classification-category",
@@ -64,6 +63,14 @@ export const ExampleCorpCatalogMapping: CompanyMapping = {
       dataType: "boolean",
       defaultValue: true,
       description: "Disponible online"
+    },
+    "searchable": {
+      xmlElement: "searchable-flag",
+      attribute: null,
+      required: false,
+      dataType: "boolean",
+      defaultValue: true,
+      description: "Búsqueda habilitada"
     }
   },
   headerMappings: {
@@ -71,17 +78,18 @@ export const ExampleCorpCatalogMapping: CompanyMapping = {
     "SKU": "product-id",
     "Title": "display-name",
     "Product Name": "display-name",
+    "Short Description": "short-description",
     "Description": "description",
     "Product Description": "description",
     "Brand": "brand",
     "Manufacturer": "brand",
-    "Price": "price",
-    "Cost Price": "price",
     "Category": "category",
     "Product Category": "category",
     "Active": "online",
     "Status": "online",
-    "Online": "online"
+    "Online": "online",
+    "Searchable": "searchable",
+    "Search Enabled": "searchable"
   },
   transformations: {
     boolean: {

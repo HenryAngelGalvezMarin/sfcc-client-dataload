@@ -280,15 +280,15 @@ export class CompanyConversionService {
               'amount': value
             };
           } else if (mappingInfo.xmlElement === 'classification-category') {
-            // Categorías
+            // Categorías - formato correcto según XSD
             if (!product['classification-category']) {
               product['classification-category'] = [];
             }
             (product['classification-category'] as unknown[]).push({
               '@': {
-                'catalog-id': mappingInfo.catalogId || companyMapping.catalog.catalogId,
-                'category-id': value
-              }
+                'catalog-id': mappingInfo.catalogId || companyMapping.catalog.catalogId
+              },
+              '#text': value  // ✅ Contenido del elemento, no atributo
             });
           } else {
             // Elementos simples

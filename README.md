@@ -27,15 +27,17 @@ src/
 │   ├── company.ts           # Tipos para configuraciones de empresa
 │   └── conversion.ts        # Tipos para conversión
 ├── references/              # 🆕 Sistema de referencia XSD
-│   ├── xsd/                # Archivos XSD originales
-│   │   └── catalog.xsd
-│   └── schemas/            # Metadatos JSON generados
-│       └── catalog.metadata.json
-├── tools/                  # 🆕 Herramientas de desarrollo
-│   ├── xsd-parser.ts      # Parser de XSD
-│   ├── xsd-processor.ts   # Procesador CLI
-│   └── simple-xsd-test.ts # Test simplificado
-└── App.tsx                # Aplicación principal
+│   └── xsd/                # Archivos XSD oficiales SFCC
+│       └── catalog.xsd     # Schema oficial de catálogo SFCC
+├── classes/                # 🆕 Clases SFCC tipadas manualmente
+│   ├── base/
+│   │   └── types.ts        # Tipos base y interfaces
+│   └── catalog/
+│       ├── Product.ts      # Clase Product con validación
+│       ├── Category.ts     # Clase Category
+│       ├── SFCCCatalogFactory.ts  # Factory para conversiones
+│       └── index.ts        # Exports del módulo
+└── App.tsx                 # Aplicación principal
 ```
 
 ## 🚀 Uso
