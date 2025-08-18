@@ -1,12 +1,8 @@
-import { XSDViewer } from './components/XSDViewer'
-import './App.css'
+import SimpleDataConverter from './components/SimpleDataConverter';
+import './App.css';
 
 function App() {
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <XSDViewer />
-    </div>
-  )
+  return <SimpleDataConverter />;
 }
 
-export default App
+export default App;

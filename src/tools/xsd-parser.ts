@@ -1,6 +1,6 @@
 import { XMLParser } from 'fast-xml-parser';
 import { readFileSync } from 'fs';
-import { XSDMetadata, XSDElement, XSDComplexType, XSDSimpleType, XSDAttribute } from '../types/xsd-metadata';
+import type { XSDMetadata, XSDElement, XSDComplexType, XSDSimpleType, XSDAttribute } from '../types/xsd-metadata';
 
 // Tipos para elementos XSD parseados
 interface ParsedXSDElement {

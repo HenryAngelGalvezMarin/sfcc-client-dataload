@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { XSDMetadata, XSDElement, XSDComplexType, XSDSimpleType, XSDAttribute } from '../types/xsd-metadata';
+import type { XSDMetadata } from '../types/xsd-metadata';
 
 interface XSDViewerProps {
   metadata?: XSDMetadata;

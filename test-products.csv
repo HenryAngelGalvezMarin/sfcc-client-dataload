@@ -1,0 +1,6 @@
+product-id,display-name,short-description,long-description,brand,online-flag,searchable-flag,price,category
+PROD001,Camiseta Básica,Camiseta de algodón,Camiseta básica de algodón 100% con cuello redondo,BasicWear,true,true,19.99,clothing
+PROD002,Pantalón Vaquero,Jeans clásicos,Pantalón vaquero de corte clásico con cinco bolsillos,DenimCo,true,true,59.99,clothing
+PROD003,Zapatillas Deportivas,Calzado deportivo,Zapatillas para correr con tecnología de amortiguación,SportBrand,true,true,89.99,shoes
+PROD004,Mochila Escolar,Mochila resistente,Mochila con múltiples compartimentos para uso escolar,BagMaster,true,true,34.99,accessories
+PROD005,Reloj Digital,Reloj multifunción,Reloj digital con cronómetro y alarma,TimeTech,false,false,29.99,electronics
