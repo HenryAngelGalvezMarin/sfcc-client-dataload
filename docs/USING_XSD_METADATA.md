@@ -53,7 +53,7 @@ export const newCompanyCatalogMapping: CompanyMapping = {
   companyName: "NewCompany",
   description: "Configuración basada en análisis XSD",
   version: "1.0.0",
-  
+
   catalog: {
     catalogId: "new-company-catalog",
     defaultCurrency: "USD",
@@ -70,7 +70,7 @@ export const newCompanyCatalogMapping: CompanyMapping = {
       dataType: 'string',
       description: 'Identificador único del producto'
     },
-    
+
     // Mapeo común sugerido en metadatos
     'Product Name': {
       xmlElement: 'display-name',
@@ -79,7 +79,7 @@ export const newCompanyCatalogMapping: CompanyMapping = {
       dataType: 'string',
       description: 'Nombre de visualización del producto'
     },
-    
+
     // Campo opcional identificado
     'Brand': {
       xmlElement: 'brand',
@@ -132,9 +132,9 @@ Los metadatos permiten validar la configuración:
 ```bash
 # Los metadatos muestran que estos campos están disponibles:
 # - classification-category
-# - online-flag  
+# - online-flag
 # - list-price
-# 
+#
 # Revisar si deberían incluirse en la configuración
 ```
 

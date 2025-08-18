@@ -14,6 +14,7 @@ export class XSDParser {
   private parser: XMLParser;
   private xsdContent: Record<string, unknown> = {};
   private targetNamespace: string = '';
+  private elementFormDefault: string = 'unqualified';
 
   constructor() {
     this.parser = new XMLParser({
@@ -51,9 +52,9 @@ export class XSDParser {
     this.xsdContent = this.parser.parse(xsdContent);
 
     // Buscar el elemento schema con diferentes namespaces
-    const schema = this.xsdContent['xs:schema'] ||
+    const schema = (this.xsdContent['xs:schema'] ||
                    this.xsdContent['xsd:schema'] ||
-                   this.xsdContent.schema;
+                   this.xsdContent.schema) as Record<string, any>;
 
     if (!schema) {
       console.log('Contenido parseado:', JSON.stringify(this.xsdContent, null, 2));

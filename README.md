@@ -28,7 +28,7 @@ src/
 │   └── conversion.ts        # Tipos para conversión
 ├── references/              # 🆕 Sistema de referencia XSD
 │   ├── xsd/                # Archivos XSD originales
-│   │   └── catalog.xsd    
+│   │   └── catalog.xsd
 │   └── schemas/            # Metadatos JSON generados
 │       └── catalog.metadata.json
 ├── tools/                  # 🆕 Herramientas de desarrollo

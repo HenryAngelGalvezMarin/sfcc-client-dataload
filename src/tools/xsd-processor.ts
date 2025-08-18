@@ -2,6 +2,7 @@
 
 import { XSDParser } from './xsd-parser';
 import type { MappingRecommendations } from './xsd-parser';
+import type { XSDMetadata } from '../types/xsd-metadata';
 import { writeFileSync, existsSync, readdirSync, statSync, mkdirSync } from 'fs';
 import { resolve, basename, join } from 'path';
 
@@ -21,7 +22,7 @@ class XSDProcessor {
   public processXSDFile(xsdFilePath: string, outputPath?: string): void {
     try {
       console.log(`📖 Procesando XSD: ${xsdFilePath}`);
-      
+
       // Verificar que el archivo existe
       if (!existsSync(xsdFilePath)) {
         throw new Error(`Archivo XSD no encontrado: ${xsdFilePath}`);
@@ -29,10 +30,10 @@ class XSDProcessor {
 
       // Parsear el XSD
       const metadata = this.parser.parseXSDFile(xsdFilePath);
-      
+
       // Determinar ruta de salida
       const finalOutputPath = outputPath || this.getDefaultOutputPath(xsdFilePath);
-      
+
       // Crear directorio si no existe
       const outputDir = join(finalOutputPath, '..');
       if (!existsSync(outputDir)) {
@@ -51,14 +52,14 @@ class XSDProcessor {
 
       // Escribir archivo JSON
       writeFileSync(finalOutputPath, JSON.stringify(enrichedMetadata, null, 2), 'utf-8');
-      
+
       console.log(`✅ Metadata generado exitosamente`);
       console.log(`📄 Archivo: ${finalOutputPath}`);
       console.log(`📊 Estadísticas:`);
       console.log(`   - Elementos: ${Object.keys(metadata.elements).length}`);
       console.log(`   - Tipos complejos: ${Object.keys(metadata.complexTypes).length}`);
       console.log(`   - Tipos simples: ${Object.keys(metadata.simpleTypes).length}`);
-      
+
     } catch (error) {
       console.error(`❌ Error procesando XSD:`, error);
       throw error;
@@ -109,7 +110,7 @@ class XSDProcessor {
   /**
    * Genera recomendaciones de mapeo basadas en los metadatos del XSD
    */
-  private generateMappingRecommendations(metadata: any): MappingRecommendations {
+  private generateMappingRecommendations(metadata: XSDMetadata): MappingRecommendations {
     const recommendations: MappingRecommendations = {
       commonMappings: {},
       requiredFields: [],
@@ -122,7 +123,7 @@ class XSDProcessor {
     // Analizar elementos para generar recomendaciones
     Object.keys(metadata.elements).forEach(elementName => {
       const element = metadata.elements[elementName];
-      
+
       if (element?.required) {
         recommendations.requiredFields.push(elementName);
       } else {
@@ -133,11 +134,11 @@ class XSDProcessor {
       if (elementName.includes('id') || elementName.includes('Id')) {
         recommendations.commonMappings[elementName] = ['id', 'ID', 'identifier', 'key'];
       }
-      
+
       if (elementName.includes('name') || elementName.includes('Name')) {
         recommendations.commonMappings[elementName] = ['name', 'title', 'display-name'];
       }
-      
+
       if (elementName.includes('price') || elementName.includes('Price')) {
         recommendations.commonMappings[elementName] = ['price', 'cost', 'value', 'amount'];
       }
