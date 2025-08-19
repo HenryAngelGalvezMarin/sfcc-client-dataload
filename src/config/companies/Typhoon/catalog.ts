@@ -99,7 +99,6 @@ export const TyphoonCatalogMapping: CompanyMapping = {
       attribute: null,
       required: false,
       dataType: "boolean",
-      defaultValue: true,
       description: "Indica si el producto es buscable",
       objectAttribute: "searchableFlag"
     },
@@ -149,6 +148,7 @@ export const TyphoonCatalogMapping: CompanyMapping = {
       xmlElement: "sitemap-changefrequency",
       attribute: null,
       required: false,
+      defaultValue: "daily",
       dataType: "string",
       description: "Frecuencia de cambio del producto en el sitemap",
       objectAttribute: "sitemapChangefrequency"
@@ -157,6 +157,7 @@ export const TyphoonCatalogMapping: CompanyMapping = {
       xmlElement: "sitemap-priority",
       attribute: null,
       required: false,
+      defaultValue: 1.0,
       dataType: "number",
       description: "Prioridad del producto en el sitemap",
       objectAttribute: "sitemapPriority"
@@ -311,6 +312,7 @@ export const TyphoonCatalogMapping: CompanyMapping = {
     "display-name": "NOMBRE_PROD",
     "short-description": "DESCRIPCION_CORTA",
     "long-description": "DESCRIPCION",
+    "online-flag": "ACTIVO",
     "manufacturer-sku": "SKU_ABUELO",
     "page-title": "NOMBRE_PROD",
     "page-description": "DESCRIPCION",
@@ -322,7 +324,12 @@ export const TyphoonCatalogMapping: CompanyMapping = {
     "silo": "SILO",
     "silhouette": "SILUETA",
     "ribbonDiscount": "PRECIO_ESPECIAL_ETIQUETA",
-    "brand": "MARCA"
+    "brand": "MARCA",
+    "searchable-flag": "ACTIVO",
+    "available-flag": "ACTIVO",
+    "online-from": "ACTIVO_DESDE",
+    "sitemap-changefrequency": "SITEMAP_FRECUENCIA",
+    "sitemap-priority": "SITEMAP_PRIORIDAD",
   },
   transformations: {
     boolean: {

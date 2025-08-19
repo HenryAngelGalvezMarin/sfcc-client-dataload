@@ -82,9 +82,9 @@ export class Product implements SFCCProduct {
     this.shortDescription = data.shortDescription;
     this.longDescription = data.longDescription;
     this.brand = data.brand;
-    this.onlineFlag = data.onlineFlag || OnlineFlagValues.TRUE;
-    this.availableFlag = data.availableFlag || AvailableFlagValues.TRUE;
-    this.searchableFlag = data.searchableFlag || SearchableFlagValues.TRUE;
+    this.onlineFlag = data.onlineFlag ?? OnlineFlagValues.TRUE;
+    this.availableFlag = data.availableFlag ?? AvailableFlagValues.TRUE;
+    this.searchableFlag = data.searchableFlag ?? SearchableFlagValues.TRUE;
     this.taxClassId = data.taxClassId;
     this.classificationCategory = data.classificationCategory;
     this.customAttributes = data.customAttributes || [];
@@ -94,7 +94,7 @@ export class Product implements SFCCProduct {
     this.minOrderQuantity = data.minOrderQuantity;
     this.stepQuantity = data.stepQuantity;
     this.onlineFrom = data.onlineFrom;
-    // Asignar images (soporta singular o array). XSD espera element <images> con <image-group>/<image path="...">
+    // TODO: Asignar images (soporta singular o array). XSD espera element <images> con <image-group>/<image path="...">
     this.images = data.images;
     this.sitemapIncludedFlag = data.sitemapIncludedFlag;
     this.sitemapChangefrequency = data.sitemapChangefrequency;
@@ -273,15 +273,15 @@ export class Product implements SFCCProduct {
     }
 
     // Flags
-    if (this.onlineFlag) {
+    if (this.onlineFlag !== null && this.onlineFlag !== undefined) {
       xml += `\n${indent}<online-flag>${this.onlineFlag}</online-flag>`;
     }
 
-    if (this.availableFlag) {
+    if (this.availableFlag !== null && this.availableFlag !== undefined) {
       xml += `\n${indent}<available-flag>${this.availableFlag}</available-flag>`;
     }
 
-    if (this.searchableFlag) {
+    if (this.searchableFlag !== null && this.searchableFlag !== undefined) {
       xml += `\n${indent}<searchable-flag>${this.searchableFlag}</searchable-flag>`;
     }
 
