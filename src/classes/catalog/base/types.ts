@@ -74,3 +74,20 @@ export type StoreAttributes = {
 export type OnlineFlag = typeof OnlineFlag[keyof typeof OnlineFlag];
 export type SearchableFlag = typeof SearchableFlag[keyof typeof SearchableFlag];
 export type AvailableFlag = typeof AvailableFlag[keyof typeof AvailableFlag];
+
+// Tipos para variaciones de productos
+export interface VariationAttribute {
+  attributeId: string;
+  displayName: LocalizedString;
+  values: VariationAttributeValue[];
+}
+
+export interface VariationAttributeValue {
+  value: string;
+  displayValue: LocalizedString;
+}
+
+export interface ProductVariant {
+  productId: string;
+  attributeValues: Record<string, string>;
+}

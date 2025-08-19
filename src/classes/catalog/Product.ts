@@ -455,7 +455,7 @@ export class Product implements SFCCProduct {
   /**
    * Escapa caracteres especiales para XML
    */
-  private escapeXML(text: string): string {
+  protected escapeXML(text: string): string {
     return text
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -467,7 +467,7 @@ export class Product implements SFCCProduct {
   /**
    * Transforma nombres de propiedades camelCase a kebab-case para elementos XML
    */
-  private transformToXMLElementName(text: string): string {
+  protected transformToXMLElementName(text: string): string {
     return text
       .replace(/([a-z])([A-Z])/g, '$1-$2')
       .toLowerCase();

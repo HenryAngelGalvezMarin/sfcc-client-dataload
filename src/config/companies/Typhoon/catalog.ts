@@ -16,6 +16,40 @@ export const TyphoonCatalogMapping: CompanyMapping = {
       titlePattern: "${productname}, ${variationvalue}"
     }
   },
+  variationSettings: {
+    enabled: true,
+    masterIdentifier: 'SKU_ABUELO',
+    parentIdentifier: 'SKU_PADRE',
+    variantIdentifier: 'SKU_HIJO',
+
+    variationAttributes: {
+      'color': {
+        csvColumn: 'COLOR',
+        displayName: 'Color',
+        sortOrder: 1
+      },
+      'size': {
+        csvColumn: 'TALLA',
+        displayName: 'Talla',
+        sortOrder: 2
+      }
+    },
+
+    grouping: {
+      strategy: 'by-master',
+      masterFields: [
+        'SKU_ABUELO', 'NOMBRE_PROD', 'DESCRIPCION', 'DESCRIPCION_CORTA', 'MARCA',
+        'GENERO', 'DEPORTE', 'TIPO', 'SILO', 'SILUETA', 'PRIORIDAD', 'ACTIVO', 'ACTIVO_DESDE'
+      ],
+      variantFields: [
+        'SKU_HIJO', 'TALLA', 'COLOR', 'UPC', 'PRECIO', 'INVENTARIO UPC'
+      ]
+    },
+
+    imageSettings: {
+      groupImagesByAttribute: 'color'
+    }
+  },
   columnMappings: {
     "product-id": {
       xmlElement: "product",

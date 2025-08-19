@@ -1,5 +1,6 @@
 import { SFCCCatalogFactory } from '../classes/catalog/SFCCCatalogFactory';
 import type { Product } from '../classes/catalog/Product';
+import type { ProductMaster } from '../classes/catalog/ProductMaster';
 import type { CompanyMapping } from '../types/company';
 import type { DataRow, ConversionResult, ConversionWarning } from '../types/conversion';
 
@@ -23,7 +24,29 @@ export class SFCCConversionService {
       if (csvData.length > 0) {
         const headers = Object.keys(csvData[0]);
         const mappedHeaders = Object.values(companyMapping.headerMappings);
-        const unmappedHeaders = headers.filter(header => !mappedHeaders.includes(header));
+
+        // Si las variaciones están habilitadas, incluir columnas específicas de variaciones
+        const variationHeaders: string[] = [];
+        if (companyMapping.variationSettings?.enabled) {
+          const { variationSettings } = companyMapping;
+          // Agregar campos específicos de variaciones que son procesados especialmente
+          variationHeaders.push(
+            variationSettings.masterIdentifier,
+            variationSettings.variantIdentifier
+          );
+          if (variationSettings.parentIdentifier) {
+            variationHeaders.push(variationSettings.parentIdentifier);
+          }
+          // Agregar columnas de atributos de variación
+          Object.values(variationSettings.variationAttributes).forEach(attr => {
+            variationHeaders.push(attr.csvColumn);
+          });
+          // Agregar campos de variantes especificados en la configuración
+          variationHeaders.push(...variationSettings.grouping.variantFields);
+        }
+
+        const allExpectedHeaders = [...mappedHeaders, ...variationHeaders];
+        const unmappedHeaders = headers.filter(header => !allExpectedHeaders.includes(header));
 
         if (unmappedHeaders.length > 0) {
           warnings.push({
@@ -36,10 +59,22 @@ export class SFCCConversionService {
 
       // 2. Crear productos desde CSV usando Factory
       console.log(`🏭 Procesando ${csvData.length} filas de datos...`);
-      const products = SFCCCatalogFactory.createProductsFromCSV(
-        csvData as Record<string, string>[],
-        companyMapping
-      );
+
+      let products: (Product | ProductMaster)[];
+
+      if (companyMapping.variationSettings?.enabled) {
+        console.log('🔄 Procesando productos con variaciones...');
+        products = SFCCCatalogFactory.createProductMastersFromCSV(
+          csvData as Record<string, string>[],
+          companyMapping
+        );
+      } else {
+        console.log('📦 Procesando productos simples...');
+        products = SFCCCatalogFactory.createProductsFromCSV(
+          csvData as Record<string, string>[],
+          companyMapping
+        );
+      }
 
       console.log(`📦 ${products.length} productos creados desde CSV`);
 
@@ -132,7 +167,14 @@ export class SFCCConversionService {
   static generatePreview(csvData: DataRow[], mapping: CompanyMapping, maxItems = 3): string {
     try {
       const sampleData = csvData.slice(0, maxItems) as Record<string, string>[];
-      const products = SFCCCatalogFactory.createProductsFromCSV(sampleData, mapping);
+
+      let products: (Product | ProductMaster)[];
+      if (mapping.variationSettings?.enabled) {
+        products = SFCCCatalogFactory.createProductMastersFromCSV(sampleData, mapping);
+      } else {
+        products = SFCCCatalogFactory.createProductsFromCSV(sampleData, mapping);
+      }
+
       const { valid } = SFCCCatalogFactory.validateProducts(products);
 
       if (valid.length === 0) {
@@ -150,16 +192,25 @@ export class SFCCConversionService {
    */
   static getDataQualityStats(csvData: DataRow[], mapping: CompanyMapping) {
     try {
-      const products = SFCCCatalogFactory.createProductsFromCSV(
-        csvData as Record<string, string>[],
-        mapping
-      );
+      let products: (Product | ProductMaster)[];
+
+      if (mapping.variationSettings?.enabled) {
+        products = SFCCCatalogFactory.createProductMastersFromCSV(
+          csvData as Record<string, string>[],
+          mapping
+        );
+      } else {
+        products = SFCCCatalogFactory.createProductsFromCSV(
+          csvData as Record<string, string>[],
+          mapping
+        );
+      }
 
       const { valid, invalid } = SFCCCatalogFactory.validateProducts(products);
 
       // Analizar tipos de errores
       const errorsByType: Record<string, number> = {};
-      invalid.forEach((item: { errors: string[] }) => {
+      invalid.forEach((item) => {
         item.errors.forEach((error: string) => {
           errorsByType[error] = (errorsByType[error] || 0) + 1;
         });
@@ -191,7 +242,7 @@ export class SFCCConversionService {
         },
         errorsByType,
         fieldStats,
-        validProducts: valid.slice(0, 5).map((p: Product) => ({
+        validProducts: valid.slice(0, 5).map((p) => ({
           productId: p.productId,
           displayName: p.displayName?.value,
           brand: p.brand

@@ -26,6 +26,28 @@ export interface CompanyMapping {
       titlePattern: string;
     };
   };
+  variationSettings?: {
+    enabled: boolean;
+    masterIdentifier: string;
+    parentIdentifier?: string;
+    variantIdentifier: string;
+    variationAttributes: {
+      [attributeId: string]: {
+        csvColumn: string;
+        displayName: string;
+        sortOrder?: number;
+      };
+    };
+    grouping: {
+      strategy: 'by-master' | 'by-parent';
+      masterFields: string[];
+      variantFields: string[];
+    };
+    imageSettings?: {
+      variationImagePattern?: string;
+      groupImagesByAttribute?: string;
+    };
+  };
   headerMappings: Record<string, string>;
   columnMappings: Record<
     string,

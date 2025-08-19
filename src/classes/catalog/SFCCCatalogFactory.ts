@@ -1,4 +1,6 @@
 import { Product } from "./Product";
+import { ProductMaster } from "./ProductMaster";
+import type { VariationAttribute, ProductVariant } from "./base/types";
 import type { CompanyMapping } from "../../types/company";
 
 export class SFCCCatalogFactory {
@@ -123,14 +125,52 @@ export class SFCCCatalogFactory {
   }
 
   /**
+   * Crea productos master con variaciones desde CSV
+   */
+  static createProductMastersFromCSV(
+    csvData: Record<string, string>[],
+    mapping: CompanyMapping
+  ): ProductMaster[] {
+    if (!mapping.variationSettings?.enabled) {
+      // Fallback al comportamiento actual sin variaciones
+      return this.createProductsFromCSV(csvData, mapping).map(p =>
+        ProductMaster.fromRawData({ ...p, productId: p.productId })
+      );
+    }
+
+    const { variationSettings } = mapping;
+
+    // 1. Agrupar por SKU_ABUELO (master identifier)
+    const groupedData = this.groupByField(csvData, variationSettings.masterIdentifier);
+
+    const masters: ProductMaster[] = [];
+
+    // 2. Procesar cada grupo
+    for (const [masterSku, variants] of groupedData) {
+      const masterData = this.extractMasterData(variants, variationSettings, mapping);
+      const master = new ProductMaster({ ...masterData, productId: masterSku });
+
+      // 3. Extraer atributos de variación
+      master.variationAttributes = this.extractVariationAttributes(variants, variationSettings);
+
+      // 4. Crear variantes
+      master.variants = this.extractVariants(variants, variationSettings);
+
+      masters.push(master);
+    }
+
+    return masters;
+  }
+
+  /**
    * Valida múltiples productos y retorna errores
    */
-  static validateProducts(products: Product[]): {
-    valid: Product[];
-    invalid: Array<{ product: Product; errors: string[] }>;
+  static validateProducts(products: (Product | ProductMaster)[]): {
+    valid: (Product | ProductMaster)[];
+    invalid: Array<{ product: Product | ProductMaster; errors: string[] }>;
   } {
-    const valid: Product[] = [];
-    const invalid: Array<{ product: Product; errors: string[] }> = [];
+    const valid: (Product | ProductMaster)[] = [];
+    const invalid: Array<{ product: Product | ProductMaster; errors: string[] }> = [];
 
     products.forEach((product) => {
       const validation = product.validate();
@@ -153,7 +193,7 @@ export class SFCCCatalogFactory {
    * Genera XML de catálogo completo desde productos válidos
    */
   static generateCatalogXML(
-    products: Product[],
+    products: (Product | ProductMaster)[],
     catalogConfig: CompanyMapping["catalog"]
   ): string {
     const validProducts = products.filter((p) => p.validate().isValid);
@@ -277,5 +317,159 @@ export class SFCCCatalogFactory {
       // Caso general
       current[finalKey] = value;
     }
+  }
+
+  /**
+   * Agrupa datos por un campo específico
+   */
+  private static groupByField(
+    data: Record<string, string>[],
+    field: string
+  ): Map<string, Record<string, string>[]> {
+    const groups = new Map<string, Record<string, string>[]>();
+
+    data.forEach(row => {
+      const key = row[field];
+      if (key) {
+        if (!groups.has(key)) {
+          groups.set(key, []);
+        }
+        groups.get(key)!.push(row);
+      }
+    });
+
+    return groups;
+  }
+
+  /**
+   * Extrae datos del master desde las variantes
+   */
+  private static extractMasterData(
+    variants: Record<string, string>[],
+    variationSettings: NonNullable<CompanyMapping['variationSettings']>,
+    mapping: CompanyMapping
+  ): Record<string, unknown> {
+    // Tomar el primer registro como base
+    const baseVariant = variants[0];
+    const masterRow: Record<string, string> = {};
+
+    // Solo incluir campos del master según configuración
+    variationSettings.grouping.masterFields.forEach(field => {
+      if (baseVariant[field] !== undefined) {
+        masterRow[field] = baseVariant[field];
+      }
+    });
+
+    // Usar el ID del master como product-id
+    masterRow[variationSettings.masterIdentifier] = baseVariant[variationSettings.masterIdentifier];
+
+    // Procesar usando la lógica existente de mapeo
+    const productData: Record<string, unknown> = {};
+    const multipleHeaders: Record<string, { headers: string[]; value: string; }> = {};
+
+    Object.entries(mapping.columnMappings).forEach(([mappedProperty, config]) => {
+      if (config.multipleHeader) {
+        multipleHeaders[mappedProperty] = {
+          headers: mapping.headerMappings[mappedProperty]?.split(",").map(h => h.trim()) || [],
+          value: "",
+        };
+      }
+    });
+
+    // Mapear headers CSV a propiedades del producto
+    Object.entries(masterRow).forEach(([csvHeader, value]) => {
+      const mappedProperties = this.getAllColumnMappings(mapping, csvHeader);
+
+      Object.entries(multipleHeaders).forEach(([, element]) => {
+        if (element.headers.includes(csvHeader)) {
+          if (!element.value) {
+            element.value += String(value);
+          } else {
+            element.value = element.value + ", " + String(value);
+          }
+        }
+      });
+
+      mappedProperties.forEach((mappedProperty) => {
+        const config = mapping.columnMappings[mappedProperty];
+        if (config.multipleHeader) return;
+
+        let transformedValue: unknown = value;
+        if (config.dataType === "boolean" && mapping.transformations?.boolean) {
+          const lowerValue = value.toLowerCase().trim();
+          if (mapping.transformations.boolean.true.includes(lowerValue)) {
+            transformedValue = true;
+          } else if (mapping.transformations.boolean.false.includes(lowerValue)) {
+            transformedValue = false;
+          }
+        }
+
+        if (config.objectAttribute) {
+          this.setNestedProperty(productData, config.objectAttribute, transformedValue, config, mappedProperty);
+        }
+      });
+    });
+
+    // Cargar valores default
+    Object.entries(mapping.columnMappings).forEach(([mappedProperty, config]) => {
+      if (!productData[mappedProperty] && config.defaultValue !== undefined && config.objectAttribute) {
+        this.setNestedProperty(productData, config.objectAttribute, config.defaultValue, config, mappedProperty);
+      }
+
+      if (multipleHeaders[mappedProperty] && config.objectAttribute) {
+        this.setNestedProperty(productData, config.objectAttribute, multipleHeaders[mappedProperty].value, config, mappedProperty);
+      }
+    });
+
+    return productData;
+  }
+
+  /**
+   * Extrae atributos de variación desde las variantes
+   */
+  private static extractVariationAttributes(
+    variants: Record<string, string>[],
+    variationSettings: NonNullable<CompanyMapping['variationSettings']>
+  ): VariationAttribute[] {
+    const attributes: VariationAttribute[] = [];
+
+    Object.entries(variationSettings.variationAttributes).forEach(([attrId, config]) => {
+      const uniqueValues = [...new Set(variants.map(v => v[config.csvColumn]))].filter(Boolean);
+
+      if (uniqueValues.length > 0) {
+        attributes.push({
+          attributeId: attrId,
+          displayName: { value: config.displayName, locale: 'x-default' },
+          values: uniqueValues.map(value => ({
+            value,
+            displayValue: { value, locale: 'x-default' }
+          }))
+        });
+      }
+    });
+
+    return attributes.sort((a, b) => {
+      const orderA = variationSettings.variationAttributes[a.attributeId]?.sortOrder || 999;
+      const orderB = variationSettings.variationAttributes[b.attributeId]?.sortOrder || 999;
+      return orderA - orderB;
+    });
+  }
+
+  /**
+   * Extrae variantes desde los datos CSV
+   */
+  private static extractVariants(
+    variants: Record<string, string>[],
+    variationSettings: NonNullable<CompanyMapping['variationSettings']>
+  ): ProductVariant[] {
+    return variants.map(variant => ({
+      productId: variant[variationSettings.variantIdentifier],
+      attributeValues: Object.fromEntries(
+        Object.entries(variationSettings.variationAttributes).map(([attrId, config]) => [
+          attrId,
+          variant[config.csvColumn] || ''
+        ])
+      )
+    }));
   }
 }
