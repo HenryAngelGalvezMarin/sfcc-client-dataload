@@ -564,7 +564,7 @@
         <xsd:attribute name="product-id" type="simpleType.Generic.NonEmptyString.100" use="required" />
         <xsd:attribute name="default" type="xsd:boolean" />
     </xsd:complexType>
-    
+
     <xsd:complexType name="complexType.Product.Variations.VariationGroups" mixed="false">
         <xsd:annotation>
             <xsd:documentation>Reserved for Beta users. Variation groups will not be created and a warning will be logged if the Variation Groups (Beta) feature is disabled.</xsd:documentation>
@@ -579,16 +579,16 @@
                     because existing variation groups will always be removed from the master before importing the variation groups specified in the import file.
                 </xsd:documentation>
             </xsd:annotation>
-        </xsd:attribute>   
+        </xsd:attribute>
     </xsd:complexType>
-    
+
     <!--  A variation group is similar to a variant but it only has some of the variation values specified -->
     <xsd:complexType name="complexType.Product.Variations.VariationGroup" mixed="false">
         <xsd:annotation>
             <xsd:documentation>Reserved for Beta users. Variation groups will not be created and a warning will be logged if the Variation Groups (Beta) feature is disabled.</xsd:documentation>
         </xsd:annotation>
         <xsd:attribute name="product-id" type="simpleType.Generic.NonEmptyString.100" use="required" />
-    </xsd:complexType>   
+    </xsd:complexType>
 
     <!--  Variation Configuration -->
     <xsd:complexType name="complexType.CategoryAssignment.VariationAssignments" mixed="false">
@@ -893,13 +893,13 @@
             </xsd:extension>
         </xsd:simpleContent>
     </xsd:complexType>
-        
+
     <xsd:complexType name="complexType.PageMetaTagRules" mixed="false">
         <xsd:sequence>
             <xsd:element name="page-meta-tag-rule" type="complexType.PageMetaTagRule" minOccurs="0" maxOccurs="50" />
         </xsd:sequence>
     </xsd:complexType>
-  
+
     <xsd:complexType name="complexType.PageMetaTagRule" mixed="false">
         <xsd:attribute name="rule-id" type="simpleType.Generic.NonEmptyString.100" use="required" />
     </xsd:complexType>

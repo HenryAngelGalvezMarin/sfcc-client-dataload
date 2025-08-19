@@ -50,6 +50,27 @@ export const AvailableFlag = {
   FALSE: 'false'
 } as const;
 
+export type Images = {
+  url: string;
+  altText?: string;
+  title?: string;
+  width?: number;
+  height?: number;
+};
+
+export type PageAttributes = {
+  pageTitle?: string;
+  pageDescription?: string;
+  pageKeywords?: string;
+}
+
+export type StoreAttributes = {
+  forcePriceFlag?: boolean;
+  nonInventoryFlag?: boolean;
+  nonRevenueFlag?: boolean;
+  nonDiscountableFlag?: boolean;
+};
+
 export type OnlineFlag = typeof OnlineFlag[keyof typeof OnlineFlag];
 export type SearchableFlag = typeof SearchableFlag[keyof typeof SearchableFlag];
 export type AvailableFlag = typeof AvailableFlag[keyof typeof AvailableFlag];

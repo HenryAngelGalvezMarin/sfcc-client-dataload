@@ -1,4 +1,4 @@
-import type { LocalizedString, ValidationResult, XMLGenerationOptions } from '../base/types';
+import type { LocalizedString, ValidationResult, XMLGenerationOptions } from './base/types';
 
 export interface SFCCCategory {
   categoryId: string;

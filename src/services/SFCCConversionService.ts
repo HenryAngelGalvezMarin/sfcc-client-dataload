@@ -22,7 +22,7 @@ export class SFCCConversionService {
       const warnings: ConversionWarning[] = [];
       if (csvData.length > 0) {
         const headers = Object.keys(csvData[0]);
-        const mappedHeaders = Object.keys(companyMapping.columnMappings);
+        const mappedHeaders = Object.values(companyMapping.headerMappings);
         const unmappedHeaders = headers.filter(header => !mappedHeaders.includes(header));
 
         if (unmappedHeaders.length > 0) {
@@ -40,6 +40,8 @@ export class SFCCConversionService {
         csvData as Record<string, string>[],
         companyMapping
       );
+
+      console.log(`📦 ${products.length} productos creados desde CSV`);
 
       // 3. Validar productos
       console.log('✅ Validando productos...');
@@ -166,7 +168,7 @@ export class SFCCConversionService {
       // Estadísticas de campos
       const fieldStats: Record<string, { filled: number; empty: number }> = {};
       csvData.forEach(row => {
-        Object.entries(mapping.headerMappings).forEach(([csvHeader, mappedField]) => {
+        Object.entries(mapping.headerMappings).forEach(([mappedField, csvHeader]) => {
           if (!fieldStats[mappedField]) {
             fieldStats[mappedField] = { filled: 0, empty: 0 };
           }

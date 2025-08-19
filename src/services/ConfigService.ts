@@ -1,5 +1,5 @@
-import { AVAILABLE_COMPANIES, getCompanyMapping } from '../config/companies';
-import type { CompanyMapping, CompanyInfo } from '../types/company';
+import { AVAILABLE_COMPANIES, getCompanyMapping } from "../config/companies";
+import type { CompanyMapping, CompanyInfo } from "../types/company";
 
 class ConfigService {
   private static instance: ConfigService;
@@ -16,7 +16,10 @@ class ConfigService {
     return AVAILABLE_COMPANIES;
   }
 
-  async loadCompanyMapping(companyName: string, schema: 'catalog' | 'pricebook' = 'catalog'): Promise<CompanyMapping> {
+  async loadCompanyMapping(
+    companyName: string,
+    schema: "catalog"
+  ): Promise<CompanyMapping> {
     const cacheKey = `${companyName}-${schema}`;
 
     if (this.loadedConfigs.has(cacheKey)) {
@@ -24,37 +27,30 @@ class ConfigService {
     }
 
     try {
-      // Obtener la configuración desde el registro estático
       const mapping = getCompanyMapping(companyName, schema);
 
       if (!mapping) {
-        throw new Error(`Configuración no encontrada para la empresa ${companyName} con esquema ${schema}`);
+        throw new Error(
+          `Configuración no encontrada para la empresa ${companyName} con esquema ${schema}`
+        );
       }
 
       this.loadedConfigs.set(cacheKey, mapping);
       return mapping;
     } catch (error) {
       console.error(`Error loading mapping for company ${companyName}:`, error);
-      throw new Error(`No se pudo cargar la configuración para la empresa ${companyName}`);
+      throw new Error(
+        `No se pudo cargar la configuración para la empresa ${companyName}`
+      );
     }
-  }  getColumnMapping(companyMapping: CompanyMapping, headerName: string): string | null {
-    // Buscar mapeo directo
-    if (companyMapping.headerMappings[headerName]) {
-      return companyMapping.headerMappings[headerName];
-    }
-
-    // Buscar mapeo case-insensitive
-    const lowerHeader = headerName.toLowerCase().trim();
+  }
+  getColumnMapping(
+    companyMapping: CompanyMapping,
+    headerName: string
+  ): string | null {
     for (const [key, value] of Object.entries(companyMapping.headerMappings)) {
-      if (key.toLowerCase().trim() === lowerHeader) {
-        return value;
-      }
-    }
-
-    // Buscar mapeo parcial
-    for (const [key, value] of Object.entries(companyMapping.headerMappings)) {
-      if (lowerHeader.includes(key.toLowerCase()) || key.toLowerCase().includes(lowerHeader)) {
-        return value;
+      if (value === headerName) {
+        return key;
       }
     }
 
@@ -65,13 +61,17 @@ class ConfigService {
     return companyMapping.columnMappings[mappingKey];
   }
 
-  transformValue(companyMapping: CompanyMapping, value: unknown, dataType: string): unknown {
-    if (value === null || value === undefined || value === '') {
+  transformValue(
+    companyMapping: CompanyMapping,
+    value: unknown,
+    dataType: string
+  ): unknown {
+    if (value === null || value === undefined || value === "") {
       return value;
     }
 
     switch (dataType) {
-      case 'boolean': {
+      case "boolean": {
         const strValue = String(value).toLowerCase().trim();
         if (companyMapping.transformations.boolean.true.includes(strValue)) {
           return true;
@@ -82,21 +82,25 @@ class ConfigService {
         return Boolean(value);
       }
 
-      case 'number': {
-        if (typeof value === 'number') return value;
+      case "number": {
+        if (typeof value === "number") return value;
         let numStr = String(value);
 
         // Remover símbolos de moneda si es necesario
-        for (const symbol of companyMapping.transformations.currency.removeSymbols) {
-          numStr = numStr.replace(new RegExp(symbol.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '');
+        for (const symbol of companyMapping.transformations.currency
+          .removeSymbols) {
+          numStr = numStr.replace(
+            new RegExp(symbol.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"),
+            ""
+          );
         }
 
         const num = parseFloat(numStr.trim());
         return isNaN(num) ? 0 : num;
       }
 
-      case 'date':
-        return new Date(value as string).toISOString().split('T')[0];
+      case "date":
+        return new Date(value as string).toISOString().split("T")[0];
 
       default:
         return String(value).trim();

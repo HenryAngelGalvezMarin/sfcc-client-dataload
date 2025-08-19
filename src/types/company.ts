@@ -1,25 +1,49 @@
 export interface CompanyMapping {
-  companyName: string;
-  description: string;
-  version: string;
-  catalog: {
-    catalogId: string;
-    defaultCurrency: string;
-    defaultLocale: string;
+  companyName?: string;
+  description?: string;
+  version?: string;
+  sites?: {
+    [siteId: string]: {
+      siteId: string;
+      defaultCurrency?: string;
+      defaultLocale?: string;
+      catalogId?: string;
+      prefix?: string;
+      suffix?: string;
+    };
   };
-  columnMappings: Record<string, {
-    xmlElement: string;
-    subElement?: string;
-    attribute: string | null;
-    required: boolean;
-    dataType: 'string' | 'number' | 'boolean' | 'date';
-    locale?: string;
-    currency?: string;
+  catalog: {
     catalogId?: string;
-    defaultValue?: string | number | boolean;
-    description: string;
-  }>;
+    defaultCurrency?: string;
+    defaultLocale?: string;
+    imageSettings?: {
+      internalLocation: {
+        basePath: string;
+      };
+      viewTypes: string[];
+      variationAttributeId: string;
+      altPattern: string;
+      titlePattern: string;
+    };
+  };
   headerMappings: Record<string, string>;
+  columnMappings: Record<
+    string,
+    {
+      xmlElement: string;
+      subElement?: string;
+      attribute: string | null;
+      required: boolean;
+      dataType: "string" | "number" | "boolean" | "date";
+      locale?: string;
+      currency?: string;
+      catalogId?: string;
+      defaultValue?: string | number | boolean;
+      description: string;
+      objectAttribute?: string;
+      multipleHeader?: boolean;
+    }
+  >;
   transformations: {
     boolean: {
       true: string[];
